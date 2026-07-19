@@ -1,0 +1,11 @@
+[project]
+name = "ad-tracking"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "azure-identity>=1.25.3",
+    "azure-keyvault-secrets>=4.11.0",
+    "azure-storage-blob>=12.30.0",
+]
