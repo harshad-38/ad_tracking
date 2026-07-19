@@ -3,7 +3,6 @@ name: mlw-basicex-prod
 location: australiasoutheast
 display_name: Ad Tracking ML Worksapce
 description: This configuration specifies a workspace configuration with existing dependent resources
-storage_account: /subscriptions/3b2b632f-1408-4fab-8777-448a2f13832e/resourceGroups/ad_tracking_resources/providers/Microsoft.Storage/storageAccounts/adtrackingstore
 key_vault: /subscriptions/3b2b632f-1408-4fab-8777-448a2f13832e/resourceGroups/ad_tracking_resources/providers/Microsoft.KeyVault/vaults/ad0tracking0key0vault
 tags:
   purpose: demonstration
