@@ -4,7 +4,7 @@
 @minLength(2)
 @maxLength(12)
 @description('Name for the AI resource and used to derive name of dependent resources.')
-param workSpaceName string = 'adtracking_staging' // Kept under 12 chars to prevent storage name overflow
+param workSpaceName string = 'adstaging' // Kept under 12 chars to prevent storage name overflow
 
 @description('Friendly name for your Azure AI resource')
 param workSpaceFriendlyName string = 'Testing Ad Tracking Env' // Fixed parameter spelling typo
