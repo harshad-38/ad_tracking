@@ -27,7 +27,7 @@ param storageAccountId string
 
 // REMOVED: AI Services parameters that are no longer needed
 
-resource workSpace 'Microsoft.MachineLearningServices/workspaces@2026-05-01' = {
+resource workSpace 'Microsoft.MachineLearningServices/workspaces@2023-08-01-preview' = {
   name: workSpaceName
   location: location
   tags: tags

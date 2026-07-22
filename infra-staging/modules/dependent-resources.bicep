@@ -17,8 +17,8 @@ param keyvaultName string
 
 var containerRegistryNameCleaned = replace(containerRegistryName, '-', '')
 
-// 1. ADDED: Log Analytics Workspace backend to fix the Application Insights ingestion retirement
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2025-07-01' = {
+// Log Analytics Workspace backend
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
   name: 'log-${applicationInsightsName}'
   location: location
   tags: tags
@@ -30,14 +30,15 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2025-07
   }
 }
 
-resource applicationInsights 'Microsoft.Insights/components@2026-03-01' = {
+// FIXED: Rolled API version back to 2020-02-02 to match eastus provider requirements
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: applicationInsightsName
   location: location
   tags: tags
   kind: 'web'
   properties: {
     Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspace.id // Explicitly linked to prevent deployment failures
+    WorkspaceResourceId: logAnalyticsWorkspace.id 
     DisableIpMasking: false
     DisableLocalAuth: false
     publicNetworkAccessForIngestion: 'Enabled'
@@ -45,24 +46,21 @@ resource applicationInsights 'Microsoft.Insights/components@2026-03-01' = {
   }
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2026-03-01-preview' = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
   name: containerRegistryNameCleaned
   location: location
   tags: tags
   sku: {
-    name: 'Standard' // Changed from Premium to Standard to save unnecessary enterprise costs
+    name: 'Standard' 
   }
   properties: {
     adminUserEnabled: true
-    // FIXED: Changed public entry points to 'Allow'/'Enabled' to prevent workspace resource lockouts
     publicNetworkAccess: 'Enabled' 
-    networkRuleSet: {
-      defaultAction: 'Allow'
-    }
+    // FIXED: Removed networkRuleSet completely because it is forbidden on the Standard SKU
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2026-03-01-preview' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyvaultName
   location: location
   tags: tags
@@ -73,8 +71,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2026-03-01-preview' = {
     enabledForTemplateDeployment: false
     enableSoftDelete: true
     enableRbacAuthorization: true
-    enablePurgeProtection: false // Set to false for easier testing/deletion; change to true for strict production compliance
-    // FIXED: Changed network isolation rules to Allow to prevent workspace connection blockages
+    enablePurgeProtection: true // FIXED: Kept as true to respect Azure's irreversible data rule
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Allow'
@@ -106,7 +103,7 @@ param storageSkuName string = 'Standard_LRS'
 
 var storageNameCleaned = replace(storageName, '-', '')
 
-resource storage 'Microsoft.Storage/storageAccounts@2026-04-01' = {
+resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
   name: storageNameCleaned
   location: location
   tags: tags
@@ -130,7 +127,6 @@ resource storage 'Microsoft.Storage/storageAccounts@2026-04-01' = {
     isHnsEnabled: false
     isNfsV3Enabled: false
     minimumTlsVersion: 'TLS1_2'
-    // FIXED: Network path set to Allow so standard public ML workspace initialization script succeeds
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Allow'
@@ -139,7 +135,6 @@ resource storage 'Microsoft.Storage/storageAccounts@2026-04-01' = {
   }
 }
 
-// MATCHED: Outputs match perfectly with main orchestrator expectations
 output storageId string = storage.id
 output keyvaultId string = keyVault.id
 output containerRegistryId string = containerRegistry.id
