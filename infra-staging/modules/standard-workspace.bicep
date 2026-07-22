@@ -8,7 +8,7 @@ param tags object
 param workSpaceName string
 
 @description('workspace display name')
-param workSpaceFriendlyName string = workSpaceName
+param workSpaceFriendlyName string
 
 @description('workspace description')
 param workSpaceDescription string
@@ -35,7 +35,7 @@ resource workSpace 'Microsoft.MachineLearningServices/workspaces@2026-05-01' = {
     type: 'SystemAssigned'
   }
   properties: {
-    friendlyName: workSpaceFreindlyName
+    friendlyName: workSpaceFriendlyName
     description: workSpaceDescription
 
     // dependent resources linked explicitly
