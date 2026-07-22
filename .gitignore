@@ -1,2 +1,5 @@
 kaggle.json
 .env
+data_assets
+*.aml*
+.ipynb_aml_checkpoints
